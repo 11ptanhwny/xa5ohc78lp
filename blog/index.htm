@@ -1,1 +1,124 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog</title>
+<script>
+window.MathJax = {
+tex: {
+inlineMath: [['$', '$'], ['\\(', '\\)']],
+displayMath: [['$$', '$$'], ['\\[', '\\]']],
+processEscapes: true
+},
+options: { processHtmlClass: 'mathjax-render' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+@font-face {
+font-family: noto-sans-regular;
+src: url('https://mrzgardini.github.io/noto-sans-regular.ttf');
+}
+h1, h2, h3, a, p {
+font-family: noto-sans-regular;
+}
+body {
+margin: 0 auto;
+max-width: 36em;
+padding: 0 1em;
+box-sizing: border-box;
+}
+pre, code {
+white-space: pre-wrap;
+word-wrap: break-word;
+overflow-x: auto;
+}
+.mathjax-render {
+overflow-x: auto;
+overflow-y: hidden;
+}
+img, embed, iframe {
+max-width: 100%;
+}
+</style>
+</head>
+<body>
+<div id="content" class="mathjax-render"></div>
+<script id="markdown-source" type="text/markdown">
 
+
+
+# Blog
+
+# 23 february 2026, 13:49. My adventure in mathematical finance, with Sagemath and a looot of good vibes
+
+The hell of parameters.
+
+$\Delta P_t = \text{close}_t - \text{close}_{t-1}$
+
+$\text{AvgGain}_n = \frac{1}{n} \sum_{i=0}^{n-1} U_{t-i}$
+
+$\text{AvgLoss}_n = \frac{1}{n} \sum_{i=0}^{n-1} D_{t-i}$
+
+$RSI = 100 - \left[ \frac{100}{1 + \left( \frac{\text{AvgGain}_n}{\text{AvgLoss}_n} \right)} \right]$
+
+```
+def RSI(series, period=14):
+    delta = series.diff()
+    gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+    loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
+    rs = gain / loss
+    rsi = 100 - (100 / (1 + rs))
+    return rsi
+```
+
+# 06 january 2026, 11:57
+
+<embed src="060120261157.pdf" type="application/pdf" width="100%" height="1000px">
+
+# 29 december 2025, 06:31
+
+![](291220250631.jpg)
+
+</script>
+<script>
+const renderer = new marked.Renderer();
+renderer.link = ({ href, title, text }) => {
+const titleAttr = title ? ` title="${title}"` : '';
+return `<a href="${href}" target="_blank" rel="noopener noreferrer"${titleAttr}>${text}</a>`;
+};
+renderer.heading = ({ text, depth }) => {
+const idMatch = text.match(/\{#(.+?)\}/);
+const id = idMatch ? idMatch[1] : text.toLowerCase().trim().replace(/[^\w]+/g, '-');
+const cleanText = text.replace(/\{#.+?\}/, '').trim();
+return `<h${depth} id="${id}">${cleanText}</h${depth}>`;
+};
+marked.use({ renderer });
+function render() {
+const container = document.getElementById('content');
+const rawMarkdown = document.getElementById('markdown-source').innerHTML;
+const mathBlocks = [];
+let tempText = rawMarkdown.replace(/(\$\$[\s\S]+?\$\$|\$[^\$]+?\$)/g, (match) => {
+mathBlocks.push(match);
+return `%%MATH_${mathBlocks.length - 1}%%`;
+});
+let html = marked.parse(tempText);
+html = html.replace(/%%MATH_(\d+)%%/g, (match, index) => {
+return mathBlocks[index].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+});
+container.innerHTML = html;
+if (window.MathJax && MathJax.typesetPromise) {
+MathJax.typesetPromise([container]).then(() => {
+container.classList.add('ready');
+if (window.location.hash) {
+const target = document.querySelector(window.location.hash);
+if (target) target.scrollIntoView();
+}
+});
+}
+}
+window.onload = render;
+</script>
+</body>
+</html>
