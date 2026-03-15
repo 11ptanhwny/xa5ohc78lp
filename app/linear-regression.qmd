@@ -41,7 +41,7 @@ y_future = model.predict(X_future)
 
 # 5. Visualizzazione
 plt.figure()
-plt.scatter(df['Date'], y, color='lightgray', s=10')
+plt.scatter(df['Date'], y, color='lightgray', s=10)
 plt.plot(df['Date'], model.predict(X), color='red')
 plt.plot(future_dates, y_future, color='green', linestyle='--')
 
