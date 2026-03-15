@@ -42,7 +42,7 @@ def ultra_smooth(x, y, sigma=1.5):
 
 x_numeric = np.arange(len(df_wk))
 
-fig, ax1 = plt.subplots(figsize=(14, 8), layout='constrained')
+fig, ax1 = plt.subplots(figsize=(14, 8))
 
 x_smooth, temp_smooth = ultra_smooth(x_numeric, df_wk['temperature_2m'], sigma=1.2)
 _, dew_smooth = ultra_smooth(x_numeric, df_wk['dew_point_2m'], sigma=1.2)
@@ -63,6 +63,7 @@ step = 6
 ax1.set_xticks(x_numeric[::step])
 ax1.set_xticklabels(df_wk['time'].dt.strftime('%D %H')[::step], rotation=45)
 
+plt.tight_layout()
 plt.show()
 ```
 
