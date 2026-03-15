@@ -6,32 +6,36 @@ format:
 jupyter: python3
 ---
 
+$y_i = \beta_0 + \beta_1 x_i + \epsilon_i$ on crude oil.
+
 ```{python}
 import yfinance as yf
 import pandas as pd
+from prophet import Prophet
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-import datetime
 
+# 1. Download dati (WTI Crude Oil)
 ticker = "CL=F"
-data = yf.download(ticker, start="2020-01-01", end=datetime.date.today().strftime('%Y-%m-%d'))
+data = yf.download(ticker, start="2018-01-01", end="2026-03-15")
 
-data['Days'] = range(len(data))
-data = data.dropna()
+# Preparazione dati per Prophet
+df = data[['Close']].reset_index()
+df.columns = ['ds', 'y']
+df['ds'] = df['ds'].dt.tz_localize(None) # Rimuove timezone per compatibilità
 
-X = data[['Days']]
-y = data['Close']
+# 2. Inizializzazione e Fit del modello
+model = Prophet(daily_seasonality=True)
+model.fit(df)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+# 3. Creazione del dataframe futuro (fino a fine 2027)
+# Calcoliamo quanti giorni mancano al 31-12-2027
+future = model.make_future_dataframe(periods=650) 
+forecast = model.predict(future)
 
-model = LinearRegression()
-model.fit(X_train, y_train)
-
-predictions = model.predict(X_test)
-
-plt.figure()
-plt.plot(data.index, y)
-plt.plot(data.index[len(X_train):], predictions, color='red')
+# 4. Visualizzazione
+fig1 = model.plot(forecast)
+plt.title("Previsione Prezzo Petrolio WTI fino al 2027")
+plt.xlabel("Data")
+plt.ylabel("Prezzo (USD)")
 plt.show()
 ```
