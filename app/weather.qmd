@@ -1,0 +1,81 @@
+---
+title: "weather"
+format:
+  html:
+    code-fold: true
+jupyter: python3
+
+import requests
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+from scipy.interpolate import make_interp_spline
+from scipy.ndimage import gaussian_filter1d
+
+url = "https://api.open-meteo.com/v1/forecast"
+params = {
+    "latitude": 41.89,
+    "longitude": 12.49,
+    "hourly": ["temperature_2m", "relative_humidity_2m", "dew_point_2m", "cloud_cover", "precipitation_probability"],
+    "timezone": "auto",
+    "forecast_days": 14
+}
+
+response = requests.get(url, params=params)
+data = response.json()["hourly"]
+df = pd.DataFrame(data)
+df['time'] = pd.to_datetime(df['time'])
+
+mask = (df['time'].dt.weekday.isin([5, 6])) & (df['time'].dt.hour >= 0) & (df['time'].dt.hour <= 6)
+df_wk = df[mask].copy().reset_index(drop=True)
+
+def ultra_smooth(x, y, sigma=1.5):
+    y_filtered = gaussian_filter1d(y, sigma=sigma)
+    
+    x_new = np.linspace(x.min(), x.max(), 500) 
+    spline = make_interp_spline(x, y_filtered, k=3)      
+    y_smooth = spline(x_new)
+    return x_new, y_smooth
+
+x_numeric = np.arange(len(df_wk))
+
+fig, ax1 = plt.subplots(figsize=(14, 8))
+
+x_smooth, temp_smooth = ultra_smooth(x_numeric, df_wk['temperature_2m'], sigma=1.2)
+_, dew_smooth = ultra_smooth(x_numeric, df_wk['dew_point_2m'], sigma=1.2)
+_, hum_smooth = ultra_smooth(x_numeric, df_wk['relative_humidity_2m'], sigma=1.5)
+_, cloud_smooth = ultra_smooth(x_numeric, df_wk['cloud_cover'], sigma=2.0)
+_, rain_smooth = ultra_smooth(x_numeric, df_wk['precipitation_probability'], sigma=1.5)
+
+ax1.plot(x_smooth, np.clip(temp_smooth, -20, 100), color='#377eb8')
+ax1.plot(x_smooth, np.clip(dew_smooth, -20, 100), color='#ff7f00')
+ax1.plot(x_smooth, np.clip(hum_smooth, 0, 100), color='#4daf4a')
+ax1.plot(x_smooth, np.clip(cloud_smooth, 0, 100), color='#f781bf')
+ax1.plot(x_smooth, np.clip(rain_smooth, 0, 100), color='#a65628')
+
+ax1.set_ylim(-5, 105)
+ax1.set_yticks([])
+
+step = 6
+ax1.set_xticks(x_numeric[::step])
+ax1.set_xticklabels(df_wk['time'].dt.strftime('%D %H')[::step], rotation=45)
+
+st.markdown(f'''
+
+# 28060, San Nazzaro Sesia, Italy
+
+''', unsafe_allow_html=True)
+
+st.pyplot(fig)
+
+st.markdown(f'''
+
+| Variable | Legend |
+|---|---|
+| Temperature | <font color="#377eb8">---</font> |
+| Dew | <font color="#ff7f00">---</font> |
+| Humidity | <font color="#4daf4a">---</font> |
+| Cloud | <font color="#f781bf">---</font> |
+| Precipitation | <font color="#a65628">---</font> |
+
+''', unsafe_allow_html=True)
