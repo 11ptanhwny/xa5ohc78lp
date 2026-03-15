@@ -6,6 +6,8 @@ format:
 jupyter: python3
 ---
 
+# 28060, San Nazzaro Sesia, Italy
+
 ```{python}
 import requests
 import matplotlib.pyplot as plt
@@ -65,3 +67,10 @@ ax1.set_xticklabels(df_wk['time'].dt.strftime('%D %H')[::step], rotation=45)
 plt.show()
 ```
 
+| Variable | Legend |
+|---|---|
+| Temperature | <font color="#377eb8">---</font> |
+| Dew | <font color="#ff7f00">---</font> |
+| Humidity | <font color="#4daf4a">---</font> |
+| Cloud | <font color="#f781bf">---</font> |
+| Precipitation | <font color="#a65628">---</font> |
