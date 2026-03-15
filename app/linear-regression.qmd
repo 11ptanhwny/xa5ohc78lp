@@ -40,14 +40,10 @@ X_future = future_dates.map(dt.datetime.toordinal).values.reshape(-1, 1)
 y_future = model.predict(X_future)
 
 # 5. Visualizzazione
-plt.figure(figsize=(12, 6))
-plt.scatter(df['Date'], y, color='lightgray', s=10, label='Dati reali (Daily)')
-plt.plot(df['Date'], model.predict(X), color='red', linewidth=2, label='Trend Lineare (Training)')
-plt.plot(future_dates, y_future, color='green', linestyle='--', linewidth=2, label='Proiezione 2027')
+plt.figure()
+plt.scatter(df['Date'], y, color='lightgray', s=10')
+plt.plot(df['Date'], model.predict(X), color='red')
+plt.plot(future_dates, y_future, color='green', linestyle='--')
 
-plt.title(f"Previsione Lineare WTI (R² = {r2:.4f})")
-plt.ylabel("Prezzo USD")
-plt.legend()
-plt.grid(True, alpha=0.3)
 plt.show()
 ```
