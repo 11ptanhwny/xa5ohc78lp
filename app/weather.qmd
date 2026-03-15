@@ -1,11 +1,10 @@
 ---
+title: # 28060, san nazzaro sesia, italy
 format:
   html:
     code-fold: true
 jupyter: python3
 ---
-
-# 28060, san nazzaro sesia, italy
 
 ```{python}
 import requests
