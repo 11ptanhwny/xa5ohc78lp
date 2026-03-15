@@ -9,33 +9,48 @@ jupyter: python3
 $y_i = \beta_0 + \beta_1 x_i + \epsilon_i$ on crude oil.
 
 ```{python}
+```{python}
 import yfinance as yf
 import pandas as pd
-from prophet import Prophet
+import numpy as np
+import datetime as dt
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
 
-# 1. Download dati (WTI Crude Oil)
+# 1. Download dati
 ticker = "CL=F"
-data = yf.download(ticker, start="2018-01-01", end="2026-03-15")
+df = yf.download(ticker, start="2020-01-01", end="2026-03-15")
+df = df[['Close']].dropna().reset_index()
 
-# Preparazione dati per Prophet
-df = data[['Close']].reset_index()
-df.columns = ['ds', 'y']
-df['ds'] = df['ds'].dt.tz_localize(None) # Rimuove timezone per compatibilità
+# 2. Pre-processing
+# Trasformiamo le date in numeri (ordinali) perché i modelli lineari richiedono input numerici
+X = df['Date'].map(dt.datetime.toordinal).values.reshape(-1, 1)
+y = df['Close'].values
 
-# 2. Inizializzazione e Fit del modello
-model = Prophet(daily_seasonality=True)
-model.fit(df)
+# 3. Fit del Modello
+model = LinearRegression()
+model.fit(X, y)
 
-# 3. Creazione del dataframe futuro (fino a fine 2027)
-# Calcoliamo quanti giorni mancano al 31-12-2027
-future = model.make_future_dataframe(periods=650) 
-forecast = model.predict(future)
+# Calcolo accuratezza sul passato (R^2)
+r2 = r2_score(y, model.predict(X))
 
-# 4. Visualizzazione
-fig1 = model.plot(forecast)
-plt.title("Previsione Prezzo Petrolio WTI fino al 2027")
-plt.xlabel("Data")
-plt.ylabel("Prezzo (USD)")
+# 4. Proiezione fino al 31 Dicembre 2027
+future_dates = pd.date_range(start="2026-03-16", end="2027-12-31", freq='D')
+X_future = future_dates.map(dt.datetime.toordinal).values.reshape(-1, 1)
+y_future = model.predict(X_future)
+
+# 5. Visualizzazione
+plt.figure(figsize=(12, 6))
+plt.scatter(df['Date'], y, color='lightgray', s=10, label='Dati reali (Daily)')
+plt.plot(df['Date'], model.predict(X), color='red', linewidth=2, label='Trend Lineare (Training)')
+plt.plot(future_dates, y_future, color='green', linestyle='--', linewidth=2, label='Proiezione 2027')
+
+plt.title(f"Previsione Lineare WTI (R² = {r2:.4f})")
+plt.ylabel("Prezzo USD")
+plt.legend()
+plt.grid(True, alpha=0.3)
 plt.show()
+
+print(f"Equazione del trend: Prezzo = {model.coef_[0]:.6f} * Giorno + {model.intercept_:.2f}")
 ```
