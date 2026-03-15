@@ -51,5 +51,5 @@ plt.legend()
 plt.grid(True, alpha=0.3)
 plt.show()
 
-print(f"Equazione del trend: Prezzo = {model.coef_[0]:.6f} * Giorno + {model.intercept_:.2f}")
+print(f"Equazione del trend: Prezzo = {float(model.coef_[0]):.6f} * Giorno + {float(model.intercept_):.2f}")
 ```
