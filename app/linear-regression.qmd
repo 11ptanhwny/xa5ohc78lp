@@ -9,7 +9,6 @@ jupyter: python3
 $y_i = \beta_0 + \beta_1 x_i + \epsilon_i$ on crude oil.
 
 ```{python}
-```{python}
 import yfinance as yf
 import pandas as pd
 import numpy as np
