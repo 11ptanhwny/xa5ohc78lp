@@ -1,3 +1,6 @@
 jupyter
 numpy
 matplotlib
+requests
+pandas
+scipy
