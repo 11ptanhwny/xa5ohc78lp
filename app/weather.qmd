@@ -8,6 +8,7 @@ jupyter: python3
 # 28060, san nazzaro sesia, italy
 
 ```{python}
+#| fig-responsive: true
 import requests
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -63,7 +64,6 @@ step = 6
 ax1.set_xticks(x_numeric[::step])
 ax1.set_xticklabels(df_wk['time'].dt.strftime('%D %H')[::step], rotation=45)
 
-plt.tight_layout()
 plt.show()
 ```
 
