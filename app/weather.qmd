@@ -3,15 +3,10 @@ title: "28060, san nazzaro sesia, italy"
 format:
   html:
     code-fold: true
-    page-layout: custom
 jupyter: python3
 ---
 
 ```{python}
-
-#| column: screen
-#| out-width: 100%
-
 import requests
 import matplotlib.pyplot as plt
 import pandas as pd
