@@ -5,3 +5,5 @@ requests
 pandas
 scipy
 plotly
+yfinance
+scikit-learn
