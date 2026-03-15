@@ -8,7 +8,7 @@ jupyter: python3
 
 ```{python}
 import requests
-import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from scipy.interpolate import make_interp_spline
@@ -40,40 +40,29 @@ def ultra_smooth(x, y, sigma=1.5):
     return x_new, y_smooth
 
 x_numeric = np.arange(len(df_wk))
-fig = go.Figure()
 
-# Aggiungiamo le tracce
-metrics = [
-    ('temperature_2m', 'Temp °C', '#377eb8', 1.2),
-    ('dew_point_2m', 'Dew Point', '#ff7f00', 1.2),
-    ('relative_humidity_2m', 'Humidity %', '#4daf4a', 1.5),
-    ('cloud_cover', 'Cloud %', '#f781bf', 2.0),
-    ('precipitation_probability', 'Rain %', '#a65628', 1.5)
-]
+fig, ax1 = plt.subplots()
 
-for col, name, color, sig in metrics:
-    y_smooth = smooth_data(df_wk[col], sigma=sig)
-    fig.add_trace(go.Scatter(
-        x=df_wk['time'], 
-        y=y_smooth,
-        mode='lines',
-        name=name,
-        line=dict(color=color, width=3, shape='spline'), # 'spline' rende tutto più morbido
-        hovertemplate='%{x|%d %b %H:%M}<br>%{y:.1f}'
-    ))
+x_smooth, temp_smooth = ultra_smooth(x_numeric, df_wk['temperature_2m'], sigma=1.2)
+_, dew_smooth = ultra_smooth(x_numeric, df_wk['dew_point_2m'], sigma=1.2)
+_, hum_smooth = ultra_smooth(x_numeric, df_wk['relative_humidity_2m'], sigma=1.5)
+_, cloud_smooth = ultra_smooth(x_numeric, df_wk['cloud_cover'], sigma=2.0)
+_, rain_smooth = ultra_smooth(x_numeric, df_wk['precipitation_probability'], sigma=1.5)
 
-# 5. Layout Full Page & Responsive
-fig.update_layout(
-    margin=dict(l=20, r=20, t=50, b=20),
-    height=800,           # Altezza fissa iniziale (si può settare in CSS)
-    autosize=True,        # Fondamentale per la responsività
-    template="plotly_white",
-    xaxis=dict(title="Tempo", tickformat="%d %b %H:%M"),
-    yaxis=dict(range=[-5, 105], showticklabels=False),
-    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-)
+ax1.plot(x_smooth, np.clip(temp_smooth, -20, 100), color='#377eb8')
+ax1.plot(x_smooth, np.clip(dew_smooth, -20, 100), color='#ff7f00')
+ax1.plot(x_smooth, np.clip(hum_smooth, 0, 100), color='#4daf4a')
+ax1.plot(x_smooth, np.clip(cloud_smooth, 0, 100), color='#f781bf')
+ax1.plot(x_smooth, np.clip(rain_smooth, 0, 100), color='#a65628')
 
-fig.show()
+ax1.set_ylim(-5, 105)
+ax1.set_yticks([])
+
+step = 6
+ax1.set_xticks(x_numeric[::step])
+ax1.set_xticklabels(df_wk['time'].dt.strftime('%D %H')[::step], rotation=45)
+
+plt.show()
 ```
 
 | variable | legend |
