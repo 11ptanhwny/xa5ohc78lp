@@ -1,11 +1,7 @@
 ---
-title: "Analisi Responsiva con Matplotlib"
-author: "Data Scientist"
 format: 
   html:
-    toc: true
     code-fold: true
-    fig-format: svg     # Forza il formato vettoriale (sempre nitido)
     fig-responsive: true # Abilita il comportamento fluido di Quarto
 execute:
   echo: true
@@ -16,10 +12,17 @@ execute:
 In questo documento, i grafici di Matplotlib si adattano automaticamente alla larghezza della pagina, sia su desktop che su smartphone.
 
 ```{python}
+#| label: fig-responsive
+#| fig-cap: "Un grafico che si adatta alla larghezza del contenitore"
+#| out-width: 100%
+
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Dati di esempio
 x = np.linspace(0, 10, 100)
 y = np.sin(x)
+
+plt.figure(figsize=(8, 4)) # Questa è la proporzione (ratio), non la dimensione fissa finale
+plt.plot(x, y)
+plt.show()
 ```
