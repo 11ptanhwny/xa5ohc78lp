@@ -1,3 +1,12 @@
+---
+title: "linear regression"
+format:
+  html:
+    code-fold: true
+jupyter: python3
+---
+
+```{python}
 import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -34,3 +43,4 @@ plt.plot(data.index[len(X_train):], predictions, label='Predizione (Trend)', col
 plt.title(f'Analisi Prezzo Petrolio ({ticker})')
 plt.legend()
 plt.show()
+```
