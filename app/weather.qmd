@@ -1,5 +1,5 @@
 ---
-title: # 28060, san nazzaro sesia, italy
+title: "28060, san nazzaro sesia, italy"
 format:
   html:
     code-fold: true
