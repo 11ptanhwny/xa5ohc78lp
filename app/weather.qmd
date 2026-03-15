@@ -8,8 +8,6 @@ jupyter: python3
 
 ```{python}
 
-#| out-width: 100%
-
 import requests
 import matplotlib.pyplot as plt
 import pandas as pd
