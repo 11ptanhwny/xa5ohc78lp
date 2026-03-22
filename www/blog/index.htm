@@ -73,30 +73,6 @@ Friends around the globe.
 ![](150320260615.jpg)
 
 Moon.
-    
-# 23 february 2026, 13:49 {#230220261349}
-
-My adventure in mathematical finance, with Sagemath and a looot of good vibes.
-    
-The hell of parameters.
-
-$\Delta P_t = \text{close}_t - \text{close}_{t-1}$
-
-$\text{AvgGain}_n = \frac{1}{n} \sum_{i=0}^{n-1} U_{t-i}$
-
-$\text{AvgLoss}_n = \frac{1}{n} \sum_{i=0}^{n-1} D_{t-i}$
-
-$RSI = 100 - \left[ \frac{100}{1 + \left( \frac{\text{AvgGain}_n}{\text{AvgLoss}_n} \right)} \right]$
-
-```
-def RSI(series, period=14):
-    delta = series.diff()
-    gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
-    loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
-    rs = gain / loss
-    rsi = 100 - (100 / (1 + rs))
-    return rsi
-```
 
 # 29 december 2025, 06:31 {#291220250631}
 
